@@ -1,0 +1,25 @@
+        {% for marker in markers %}
+            var infowindow{{loop.index}} = new google.maps.InfoWindow( {{ "{" }}
+                content: "{{ marker.info }}"
+            {{ "}" }} );
+
+            var marker{{loop.index}} = new google.maps.Marker( {{ "{" }}
+            position: new google.maps.LatLng({{ marker.location.0 }}, {{ marker.location.1 }}),
+            label: {{ "{" }}
+                {% if marker.text %}text: "{{ marker.text }}", {% endif %}
+                color: 'black',
+                fontSize: "16px",
+            {{ "}" }} ,
+            map: map,
+          {% if marker.icon %}
+            icon: {{ "{" }}
+                url: "{{ marker.icon }}",
+                scaledSize: new google.maps.Size(32, 32),
+            {{ "}" }}
+          {% endif %}
+            {{ "}" }} );
+
+            marker{{loop.index}}.addListener('click', function(obj) {{ "{" }}
+            infowindow{{loop.index}}.open(map, marker{{ loop.index }});
+          {{ "}" }} );
+        {% endfor %}
