@@ -3,3 +3,4 @@ index.html
 .idea
 secrets.py
 *.bat
+__pycache__

@@ -1,6 +1,6 @@
-from openpyxl import load_workbook
+import csv
 from jinja2 import Template
-from .secrets import *
+from secrets import *
 
 with open('markers.template.html', 'r') as stream:
     template_text = stream.read()
@@ -8,30 +8,29 @@ with open('markers.template.html', 'r') as stream:
 with open('index.template.html', 'r') as stream:
     index_template = stream.read()
 
-wb = load_workbook(filename="data.xlsx")
-
-sheet = wb.active
 items = []
-for row in sheet.iter_rows():
-    cells = list(row)
-    if cells[0].value is None:
-        break
+with open('data.csv', 'r') as stream:
+	reader = csv.reader(stream, delimiter=';')
+	for row in reader:
+		cells = list(row)
+		if cells[0] is None:
+			break
 
-    d = {
-        'text': cells[0].value.replace("\"", "'"),
-        'location': [
-            cells[2].value,
-            cells[3].value,
-        ],
-        'info': cells[5].value.replace("\"", "'") + "<br/> More info at: <a href=\\\"{}\\\">{}</a>".format(cells[4].value,
-                                                                                                       cells[4].value),
-    }
+		d = {
+			'text': cells[0].replace("\"", "'"),
+			'location': [
+				cells[2],
+				cells[3],
+			],
+			'info': cells[5].replace("\"", "'") + "<br/> More info at: <a href=\\\"{}\\\">{}</a>".format(cells[4],
+																										   cells[4]),
+		}
 
-    if cells[6].value is not None:
-        d['icon'] = "icons/" + cells[6].value
-        del d['text']
+		if cells[6] is not None:
+			d['icon'] = "icons/" + cells[6]
+			del d['text']
 
-    items.append(d)
+		items.append(d)
 
 
 template = Template(template_text)
